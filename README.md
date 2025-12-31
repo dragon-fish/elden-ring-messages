@@ -1,6 +1,6 @@
 <div align="center">
 
-# Elden Ring Message 艾尔登法环谏言生成器
+# Elden Ring Messages 艾尔登法环谏言生成器
 
 一个高度还原《艾尔登法环》（Elden Ring）游戏内谏言（Message）系统的网页应用。
 
