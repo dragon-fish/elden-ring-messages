@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { type LexiconData } from '../utils/lexicon'
 import { type MessageLine, type MessageLine2 } from '../stores/message'
 import MessagePart from './MessagePart.vue'
@@ -23,19 +23,26 @@ const hasSecondSegment = computed(() => {
   return !!line.value.conjunction
 })
 
+const stashedConjunction = ref('')
+
 function toggleSecondSegment() {
   if (hasSecondSegment.value) {
-    // Remove second segment
+    // Remove second segment (hide it)
+    // Stash the conjunction so we can restore it later
+    stashedConjunction.value = line.value.conjunction
+    
     const newLine = { ...line.value }
     newLine.conjunction = ''
-    newLine.segment2 = { template: '', wordCategory: '', word: '' }
+    // Do NOT clear segment2 data, so it persists if user toggles back
     emit('update:modelValue', newLine)
   } else {
     // Add second segment
     const newLine = { ...line.value }
-    newLine.conjunction = props.lexicon.conjunctions[0] || ''
-    // Initialize segment2 with default template if available
-    if (props.lexicon.templates.length > 0) {
+    // Restore stashed conjunction or use default
+    newLine.conjunction = stashedConjunction.value || props.lexicon.conjunctions[0] || ''
+    
+    // Initialize segment2 only if it's empty (never used or cleared in old version)
+    if (!newLine.segment2.template && props.lexicon.templates.length > 0) {
       newLine.segment2 = { template: props.lexicon.templates[0], wordCategory: '', word: '' }
     }
     emit('update:modelValue', newLine)
@@ -99,6 +106,22 @@ function updateConjunction(event: Event) {
 .start-conjunction,
 .conjunction-section {
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+}
+
+select {
+  padding: 0.5rem;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #5a5a5a;
+  font-family: inherit;
 }
 
 .conjunction-toggle {

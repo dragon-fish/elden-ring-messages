@@ -35,47 +35,39 @@ const availableWords = computed(() => {
   return props.lexicon.words[props.modelValue.wordCategory] || []
 })
 
-// Watchers to reset dependent fields
-watch(
-  () => props.modelValue.template,
-  (newTemplate) => {
-    if (!newTemplate.includes('*****')) {
-      emit('update:modelValue', {
-        ...props.modelValue,
-        wordCategory: '',
-        word: '',
-      })
-    } else if (!props.modelValue.wordCategory) {
-      // Default to first category if none selected
-      emit('update:modelValue', {
-        ...props.modelValue,
-        wordCategory: 'enemies',
-      })
-    }
-  },
-)
-
-watch(
-  () => props.modelValue.wordCategory,
-  (newCategory) => {
-    if (newCategory) {
-      // Reset word when category changes
-      emit('update:modelValue', {
-        ...props.modelValue,
-        word: props.lexicon.words[newCategory]?.[0] || '',
-      })
-    }
-  },
-)
-
 function updateTemplate(event: Event) {
   const val = (event.target as HTMLSelectElement).value
-  emit('update:modelValue', { ...props.modelValue, template: val })
+  const hasPlaceholder = val.includes('*****')
+
+  let newCategory = props.modelValue.wordCategory
+  let newWord = props.modelValue.word
+
+  if (!hasPlaceholder) {
+    newCategory = ''
+    newWord = ''
+  } else if (!newCategory) {
+    // Default to first category if none selected
+    newCategory = 'enemies'
+    newWord = props.lexicon.words['enemies']?.[0] || ''
+  }
+
+  emit('update:modelValue', {
+    template: val,
+    wordCategory: newCategory,
+    word: newWord,
+  })
 }
 
 function updateCategory(event: Event) {
   const val = (event.target as HTMLSelectElement).value as Category
-  emit('update:modelValue', { ...props.modelValue, wordCategory: val })
+  // Reset word when category changes
+  const newWord = props.lexicon.words[val]?.[0] || ''
+
+  emit('update:modelValue', {
+    ...props.modelValue,
+    wordCategory: val,
+    word: newWord,
+  })
 }
 
 function updateWord(event: Event) {

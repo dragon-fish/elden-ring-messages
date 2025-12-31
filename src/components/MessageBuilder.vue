@@ -16,7 +16,7 @@ onMounted(async () => {
     lexicon.value = await loadLexicon()
 
     // Initialize store from URL or LocalStorage
-    store.loadFromUrl()
+    store.loadFromUrl(lexicon.value)
 
     // Set defaults if empty (first load ever)
     if (!line1.value.segment1.template && lexicon.value.templates.length > 0) {
@@ -46,7 +46,8 @@ function copyText(text: string) {
 }
 
 function shareItem(item: HistoryItem) {
-  const url = store.getShareUrl(item)
+  if (!lexicon.value) return
+  const url = store.getShareUrl(lexicon.value, item)
   navigator.clipboard.writeText(url)
   alert('分享链接已复制到剪贴板！')
 }
