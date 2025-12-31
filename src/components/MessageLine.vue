@@ -30,7 +30,7 @@ function toggleSecondSegment() {
     // Remove second segment (hide it)
     // Stash the conjunction so we can restore it later
     stashedConjunction.value = line.value.conjunction
-    
+
     const newLine = { ...line.value }
     newLine.conjunction = ''
     // Do NOT clear segment2 data, so it persists if user toggles back
@@ -40,7 +40,7 @@ function toggleSecondSegment() {
     const newLine = { ...line.value }
     // Restore stashed conjunction or use default
     newLine.conjunction = stashedConjunction.value || props.lexicon.conjunctions[0] || ''
-    
+
     // Initialize segment2 only if it's empty (never used or cleared in old version)
     if (!newLine.segment2.template && props.lexicon.templates.length > 0) {
       newLine.segment2 = { template: props.lexicon.templates[0], wordCategory: '', word: '' }
